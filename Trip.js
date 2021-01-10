@@ -1,12 +1,11 @@
 module.exports = class Trip {
-	constructor(params = {}) {
-		const { passengers = [], startingTime = 0, penalty = 0 } = params;
-
-		this.startingTime = startingTime + this.penalty;
+	constructor({ passengers, startingTime }) {
+		this.startingTime = startingTime;
 		this.passengers = passengers;
-		this.penalty = penalty;
+		this.max = this.passengers.reduce((acc, p) => acc < p ? p : acc, 0);
 	}
 
+	// 
 	get efficiency() {
 		return this.passengers.length / this.travelTime;
 	}
@@ -20,9 +19,5 @@ module.exports = class Trip {
 
 	get tripEnd() {
 		return this.startingTime + this.travelTime;
-	}
-
-	addPassenger(passenger) {
-		this.passengers.push(passenger);
 	}
 }

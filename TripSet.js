@@ -1,4 +1,5 @@
 const Trip = require('./Trip');
+
 // represents several trips, each going to a different elevator
 module.exports = class TripSet {
 	constructor({ availableElevators, elevatorCapacity, passengers }) {
@@ -13,11 +14,10 @@ module.exports = class TripSet {
 		for (let i = 0; i < availableElevators.length; i++) {
 			const penalty = this.startingTime - availableElevators[i].currentTripEnd;
 			const myPassengers = sortedPassengers.splice(0, elevatorCapacity);
-			const startingTime = availableElevators[i].currentTripEnd;
+			const startingTime = availableElevators[i].currentTripEnd + penalty;
 			const trip = new Trip({ 
 				passengers: myPassengers,
 				elevatorCapacity, 
-				penalty,
 				startingTime,
 			});
 			this.trips.push(trip);

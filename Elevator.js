@@ -1,3 +1,5 @@
+// the elevator class is basically just a container for
+// trips with a couple convenience methods
 module.exports = class Elevator {
 	constructor() {
 		this.trips = [];

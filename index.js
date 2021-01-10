@@ -2,7 +2,7 @@ const fs = require('fs');
 const Trip = require('./Trip');
 const TripSet = require('./TripSet');
 const Elevator = require('./Elevator');
-const ElevatorDirector = require('./ElevatorDirector');
+const optimizeTrips = require('./optimize-trips');
 
 function _loadInputFile(path) {
 	return new Promise((resolve, reject) => {
@@ -41,15 +41,18 @@ function _writeElevatorHistory(path, history) {
 	});
 }
 
+console.log(JSON.stringify(optimizeTrips({
+	queue: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 12, 14, 15, 16, 17],
+	elevatorCount: 2,
+	elevatorCapacity: 3
+}), '\t', 4));
+
 module.exports = function(path) {
 	return _loadInputFile(path)
 		.then(_parseVariablesFromFile)
-		.then(params => {
-			const director = ElevatorDirector(params);
-			return director.processQueue();
-		})
+		.then(optimizeTrips)
 		.then(_writeElevatorHistory)
-		.then(() => process.exit(0));
+		.then(() => process.exit(0))
 		.catch(err => {
 			console.error(err);
 			process.exit(1);
