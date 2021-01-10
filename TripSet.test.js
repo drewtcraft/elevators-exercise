@@ -21,6 +21,6 @@ describe('TripSet class', function() {
 		expect(tripSet).to.be.ok;
 		expect(tripSet.trips).to.be.an('array');
 		expect(tripSet.trips.length).to.equal(2);
-		expect(tripSet.passengerCount).to.equal(6);
+		expect(tripSet.trips[0].passengers.includes(3)).to.be.true;
 	});
 });

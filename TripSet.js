@@ -1,58 +1,27 @@
 const Trip = require('./Trip');
 // represents several trips, each going to a different elevator
 module.exports = class TripSet {
-	constructor(params) {
-		const { 
-			availableElevators, 
-			elevatorCapacity, 
-			passengers,
-		} = params;
-
+	constructor({ availableElevators, elevatorCapacity, passengers }) {
 		this.trips = [];
+		this.passengers = passengers;
 
 		// starting time for this trip is the last elevator's trip end
 		this.startingTime = availableElevators[availableElevators.length - 1].currentTripEnd;
 
+		const sortedPassengers = passengers.sort((a, b) => a - b)
 		// create the number of available trips
 		for (let i = 0; i < availableElevators.length; i++) {
-			const tripPenalty = this.startingTime - availableElevators[i].startingTime;
+			const penalty = this.startingTime - availableElevators[i].currentTripEnd;
+			const myPassengers = sortedPassengers.splice(0, elevatorCapacity);
+			const startingTime = availableElevators[i].currentTripEnd;
 			const trip = new Trip({ 
-				capacity: elevatorCapacity, 
-				penalty: tripPenalty,
+				passengers: myPassengers,
+				elevatorCapacity, 
+				penalty,
+				startingTime,
 			});
 			this.trips.push(trip);
 		}
-
-		const doIterate = () => {
-			return this.trips.every(trip => !trip.isAtCapacity) 
-				&& passengers.length;
-		}
-
-		this.passengerCount = 0;
-
-		// room for improvement here, might be some situations where
-		// not traveling at capacity is more beneficial,
-		// should evaluate each passenger's impact on the tripset
-		// and choose the point in the dequeue process that represents maximum
-		// efficiency
-		while (doIterate()) {
-			const nextPassenger = passengers.shift();
-			const sortedTrip = this.trips.sort((a, b) => {
-				return b.evaluateNewPassenger(nextPassenger)
-					- a.evaluateNewPassenger(nextPassenger);
-			});
-			const [ bestTrip ] = sortedTrip;
-			bestTrip.addPassenger(nextPassenger);
-			this.passengerCount += 1;
-		}
-	}
-
-	get totalPassengers() {
-		return this.trips.reduce((acc, t) => acc + t.passengers.length, 0);
-	}
-
-	get cost() {
-		return this.penalty * this.trips
 	}
 
 	get efficiency() {
