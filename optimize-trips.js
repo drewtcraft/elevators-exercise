@@ -1,5 +1,5 @@
-const Elevator = require('./Elevator');
-const TripSet = require('./TripSet');
+const Elevator = require('./classes/Elevator');
+const TripSet = require('./classes/TripSet');
 
 // sort elevators by when their current trip will end
 function _getSortedElevatorsByTripEnd(elevators) {
@@ -8,6 +8,7 @@ function _getSortedElevatorsByTripEnd(elevators) {
 	});
 }
 
+// get the last index of the next elevator(s) to arrive in the lobby
 function _getNextLobbyElevators(sortedElevators, elapsedTime) {
 	const firstTripEnd = sortedElevators[0].currentTripEnd;
 	return sortedElevators.filter(e => e.currentTripEnd === firstTripEnd).length;
@@ -20,9 +21,9 @@ function _getMostEfficientTripSet(tripSets) {
 
 module.exports = function optimizeTrips(params) {
 	const { elevatorCount, elevatorCapacity, queue } = params;
-	const maxCapacity = elevatorCount * elevatorCapacity;
 	let elapsedTime = 0;
 
+	// create all of our elevators
 	const elevators = [];
 	for (let i = 0; i < elevatorCount; i++) {
 		elevators.push(new Elevator());
@@ -30,9 +31,6 @@ module.exports = function optimizeTrips(params) {
 
 	// start processing the queue of passengers
 	while (queue.length) {
-		// start with the most passengers we can take
-		const passengers = queue.slice(0, maxCapacity);
-
 		// order elevators by how soon they will return to the lobby
 		const sortedElevators = _getSortedElevatorsByTripEnd(elevators);
 
@@ -45,8 +43,13 @@ module.exports = function optimizeTrips(params) {
 			// take a subset of the sorted elevators as available
 			const availableElevators = sortedElevators.slice(0, elevatorsInLobby + i);
 
+			// take the most passengers we can fit
+			const maxCapacity = availableElevators.length * elevatorCapacity;
+			const endIdx = Math.min(maxCapacity, queue.length);
+			const passengers = queue.slice(0, endIdx);
+
 			// create a tripset, which automatically distributes passengers 
-			// optimally among a set of trips
+			// optimally amongst a maximum set of trips
 			const tripSet = new TripSet({
 				availableElevators,
 				elevatorCapacity,
@@ -67,9 +70,7 @@ module.exports = function optimizeTrips(params) {
 		bestTripSet.trips.forEach((trip, i) => {
 			sortedElevators[i].addTrip(trip);
 		});
-		console.log('elapsed time', elapsedTime);
 	}
-
 
 	return elevators;
 }

@@ -1,7 +1,4 @@
 const fs = require('fs');
-const Trip = require('./Trip');
-const TripSet = require('./TripSet');
-const Elevator = require('./Elevator');
 const optimizeTrips = require('./optimize-trips');
 
 function _loadInputFile(path) {

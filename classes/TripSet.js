@@ -24,6 +24,7 @@ module.exports = class TripSet {
 		}
 	}
 
+	// average efficiency of all trips in this tripset
 	get efficiency() {
 		const totalEfficiency = this.trips.reduce((acc, trip) => {
 			return acc + trip.efficiency;
