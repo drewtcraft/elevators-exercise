@@ -1,11 +1,15 @@
 const fs = require('fs');
+const path = require('path');
 const optimizeTrips = require('./optimize-trips');
 
-function _loadInputFile(path) {
+function _loadInputFile(filePath) {
 	return new Promise((resolve, reject) => {
-		fs.readFile(path, 'utf-8', (err, res) => {
+		if (!/\.txt$/.test(filePath)) {
+			return reject(new Error('provided file is not of type ".txt"'));
+		}
+		fs.readFile(filePath, 'utf-8', (err, res) => {
 			if (err) {
-				console.error(`Problem loading file ${path}`);
+				console.error(`Problem loading file ${filePath}`);
 				return reject(err);
 			}
 			resolve(res);
@@ -14,22 +18,49 @@ function _loadInputFile(path) {
 }
 
 function _parseVariablesFromFile(file) {
-	try {
-		const [ n, m, q, queue ] = file.split('\n');
-	} catch (err) {
-
+	if (!file || !file.length) {
+		throw new Error('received empty file');
 	}
+	const [ n, _, q, commaSeparated ] = file.split('\n');
+	const elevatorCapacity = Number(q);
+	const elevatorCount = Number(n);
+
+	if (!commaSeparated || !commaSeparated.length) {
+		throw new Error('missing list of passengers');
+	}
+	const queue = commaSeparated.split(',').map(t => Number(t.trim()));
+
+	if (!elevatorCapacity || isNaN(elevatorCapacity)) {
+		throw new Error('bad elevatorCapacity data');
+	}
+
+	if (!elevatorCount || isNaN(elevatorCount)) {
+		throw new Error('bad elevatorCount data');
+	}
+
+	if (!queue) {
+		throw new Error('bad queue data');
+	}
+	return { 
+		elevatorCapacity,
+		elevatorCount,
+		queue,
+	};
 }
 
-function _writeElevatorHistory(path, history) {
+function _writeElevatorHistory(filePath, history) {
+	// file name without extension
+	const basename = path.basename(filePath)
+		.replace(/\..*/, '');
+
 	return new Promise((resolve, reject) => {
 		fs.writeFile(
-			`./${path}-output.txt`, 
+			`./${basename}-output.txt`, 
 			JSON.stringify(history, '\t', 4),
 			'utf-8',
 			(err, res) => {
 				if (err) {
-					console.error(`Problem loading file ${path}`);
+					console.error(`Problem loading file ${filePath}`);
 					return reject(err);
 				}
 				resolve(res);
@@ -38,21 +69,19 @@ function _writeElevatorHistory(path, history) {
 	});
 }
 
-console.log(JSON.stringify(optimizeTrips({
-	queue: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 12, 14, 15, 16, 17],
-	elevatorCount: 2,
-	elevatorCapacity: 3
-}), '\t', 4));
-
-module.exports = function(path) {
-	return _loadInputFile(path)
+module.exports = function(filePath, doWrite = true) {
+	return _loadInputFile(filePath)
 		.then(_parseVariablesFromFile)
 		.then(optimizeTrips)
-		.then(_writeElevatorHistory)
-		.then(() => process.exit(0))
+		.then(elevatorHistory => {
+			if (!doWrite) return elevatorHistory;
+
+			return _writeElevatorHistory(filePath, elevatorHistory)
+				.then(() => elevatorHistory);
+		})
 		.catch(err => {
+			console.error('problem optimizing trips:');
 			console.error(err);
-			process.exit(1);
 		});
 }
 

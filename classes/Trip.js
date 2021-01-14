@@ -1,8 +1,15 @@
 module.exports = class Trip {
 	constructor({ passengers, startingTime }) {
+		if (!passengers || !passengers.length) {
+			throw new Error('Trip ctor bad/missing parameter "passengers"');
+		}
+		if (typeof startingTime !== 'number') {
+			throw new Error('Trip ctor bad/missing parameter "startingTime"');
+		}
+
 		this.startingTime = startingTime;
 		this.passengers = passengers;
-		this.max = this.passengers.reduce((acc, p) => acc < p ? p : acc, 0);
+		this.max = passengers.reduce((acc, p) => acc < p ? p : acc, 0);
 	}
 
 	// efficiency in our case is the most passengers moved per unit time

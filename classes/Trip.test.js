@@ -2,20 +2,49 @@ const { expect } = require('chai');
 const Trip = require('./Trip');
 
 describe('Trip class', function () {
-	const capacity = 4;
-	const trip = new Trip({ capacity });
-	it('should construct a class', function () {
-		expect(trip).to.be.ok;
-		expect(trip instanceof Trip).to.be.true;
+	describe('constructor', function() {
+		it('should construct a class', function () {
+			const trip = new Trip({
+				passengers: [1, 2, 3],
+				startingTime: 0,
+			});
+			expect(trip).to.be.ok;
+		});
+
+
+		it('should throw when missing params', function () {
+			try {
+				let trip = new Trip({ startingTime: 0 });
+			} catch (err) {
+				expect(err.message).to.equal('Trip ctor bad/missing parameter "passengers"');
+			}
+
+			try {
+				let trip = new Trip({ passengers: [1, 2, 3] });
+			} catch (err) {
+				expect(err.message).to.equal('Trip ctor bad/missing parameter "startingTime"');
+			}
+		});
 	});
 
-	const passenger55 = 55;
-	it('should be able to add passengers', function () {
-		expect(trip.passengers.length).to.equal(0);
+	describe('computed properties', function() {
+		const trip = new Trip({
+			passengers: [1, 2, 3],
+			startingTime: 20,
+		});
 
-		trip.addPassenger(passenger55);
+		it('should calculate efficiency correctly', function() {
+			expect(trip.efficiency).to.equal(3/9);
+		});
 
-		expect(trip.passengers.length).to.equal(1);
-		expect(trip.passengers[0]).to.equal(passenger55);
+		it('should calculate travel time correctly', function() {
+			expect(trip.travelTime).to.equal((3*2)+3);
+		});
+
+		it('should calculate trip end correctly', function() {
+			expect(trip.tripEnd).to.equal((3*2)+3 + 20);
+		});
 	});
+	
+
 });

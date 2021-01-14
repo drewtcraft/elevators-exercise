@@ -72,5 +72,13 @@ module.exports = function optimizeTrips(params) {
 		});
 	}
 
-	return elevators;
+	return elevators.map(e => e.trips)
+		.flat()
+		.sort((a, b) => a.startingTime - b.startingTime)
+		.map(t => {
+			return {
+				passengers: t.passengers,
+				departs: t.startingTime,
+			};
+		});
 }
