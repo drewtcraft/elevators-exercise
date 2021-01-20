@@ -1,5 +1,6 @@
 const Elevator = require('./classes/Elevator');
 const Trip = require('./classes/Trip');
+const TripSet = require('./classes/TripSet');
 const { expect } = require('chai');
 const rewire = require('rewire');
 const fs = require('fs');
@@ -12,11 +13,12 @@ const _getMostEfficientTripSet = mod.__get__('_getMostEfficientTripSet');
 describe('optimize trips', function() {
 	describe('utility functions', function() {
 		const input = [ new Elevator(), new Elevator() ]
-			.forEach((el, i) => {
+			.map((el, i) => {
 				el.addTrip(new Trip({
 					startingTime: 0,
-					passengers: i + 1 * 20,
+					passengers: [ i + 1 * 20 ],
 				}));
+				return el;
 			});
 
 		let sorted;
@@ -35,21 +37,23 @@ describe('optimize trips', function() {
 		});
 
 		describe('_getMostEfficientTripSet', function() {
-			const elevators = [ new Elevator(), new Elevator() ];
-			const tripSets = [
-				new TripSet({
-					passengers: [100],
-					availableElevators: [ elevators[0] ],
-					elevatorCapcity: 1,
-				}),
-				new TripSet({
-					passengers: [1, 100],
-					availableElevators: elevators,
-					elevatorCapcity: 1,
-				}),
-			];
+			it('should return the most efficient tripset', function() {
+				const elevators = [ new Elevator(), new Elevator() ];
+				const tripSets = [
+					new TripSet({
+						passengers: [100],
+						availableElevators: [ elevators[0] ],
+						elevatorCapacity: 1,
+					}),
+					new TripSet({
+						passengers: [101, 100],
+						availableElevators: elevators,
+						elevatorCapacity: 1,
+					}),
+				];
 
-			expect(_getMostEfficientTripSet(tripSets)).to.equal(tripSets[1]);
+				expect(_getMostEfficientTripSet(tripSets)).to.deep.eq(tripSets[0]);
+			});
 		});
 	});
 

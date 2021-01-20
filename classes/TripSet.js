@@ -26,8 +26,9 @@ module.exports = class TripSet {
 		// aren't enough passengers to fill all elevators
 		const passengersToTake = Math.min(
 			elevatorCapacity, 
-			passengers.length / availableElevators.length
+			Math.floor(passengers.length / availableElevators.length)
 		);
+
 		// create the number of available trips
 		for (let i = 0; i < availableElevators.length; i++) {
 			const myPassengers = sortedPassengers.splice(0, passengersToTake);

@@ -59,7 +59,7 @@ describe('TripSet class', function() {
 		});
 	});
 
-	describe('getters', function() {
+	describe('computer properties', function() {
 		it('should calculate efficiency correctly', function() {
 			expect(tripSet.efficiency).to.equal(0.054901960784313725);
 		});

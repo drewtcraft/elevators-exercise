@@ -3,7 +3,7 @@ const Trip = require('./Trip');
 
 describe('Trip class', function () {
 	describe('constructor', function() {
-		it('should construct a class', function () {
+		it('should construct fine', function () {
 			const trip = new Trip({
 				passengers: [1, 2, 3],
 				startingTime: 0,
@@ -38,11 +38,11 @@ describe('Trip class', function () {
 		});
 
 		it('should calculate travel time correctly', function() {
-			expect(trip.travelTime).to.equal((3*2)+3);
+			expect(trip.travelTime).to.equal(3 * 2 + 3);
 		});
 
 		it('should calculate trip end correctly', function() {
-			expect(trip.tripEnd).to.equal((3*2)+3 + 20);
+			expect(trip.tripEnd).to.equal(3 * 2 + 3 + 20);
 		});
 	});
 	
