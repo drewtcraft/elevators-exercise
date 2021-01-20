@@ -1,5 +1,8 @@
 # Elevator Problem
 
+## Setup
+`npm i`
+
 ## Run
 `node index.js <path-to-file>`
 
