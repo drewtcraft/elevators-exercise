@@ -122,7 +122,6 @@ function processFile(filePath) {
 			} else {
 				let prevLength = queue.length;
 				queue = [ ...queue, ..._commaSeparatedToQueue(raw) ];
-				console.log('extending queue by', prevLength, 'to', queue.length);
 			}
 
 			const trips = optimizeTrips({
@@ -131,8 +130,6 @@ function processFile(filePath) {
 				queue,
 				isEnd: isEndOfFile,
 			});
-
-			console.log(trips);
 
 			const passengersTaken = trips.reduce((acc, trip) => {
 				return acc + trip.passengers.length;
@@ -144,7 +141,6 @@ function processFile(filePath) {
 			trips.forEach(t => writeStream.write(JSON.stringify(t)));
 			readStream.resume();
 		});
-
 	}
 
 	// start processing when both streams are ready
